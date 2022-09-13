@@ -4,11 +4,11 @@ import { chunk, flatten, orderBy } from 'lodash'
 import { utils as etherUtils, BigNumber } from 'ethers'
 import RockIDs from '../../../data/rock-ids.json'
 
-const chunked = chunk(RobeIDs, 20)
+const chunked = chunk(RockIDs, 200)
 const apiKey = process.env.OPENSEA_API_KEY
 
 const fetchRockPage = async (ids) => {
-  let url = 'https://api.opensea.io/api/v1/assets?collection=lootproject&'
+  let url = 'https://api.opensea.io/api/v1/assets/collection=0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85&'
   url += ids.map((id) => `token_ids=${id}`).join('&')
 
   const res = await fetch(url, {
@@ -21,11 +21,7 @@ const fetchRockPage = async (ids) => {
   return Promise.all(
     json.assets.map(async (asset) => {
       return {
-        ...asset,
-        image_url: await rarityImage(asset.token_metadata, {
-          colorFn: ({ itemName }) =>
-            itemName.toLowerCase().includes('divine robe') && 'cyan',
-        }),
+        ...asset
       }
     }),
   )
