@@ -1,5 +1,8 @@
 import 'tailwindcss/tailwind.css'
 import Head from 'next/head'
+
+
+
 function Rocks({ Component, pageProps }) {
   return (
     <>

@@ -1,55 +1,32 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import pMap from 'p-map'
-import { chunk, flatten, orderBy } from 'lodash'
-import { utils as etherUtils, BigNumber } from 'ethers'
-import RockIDs from '../../../data/rock-ids.json'
+import { chunk, flatten } from 'lodash'
+import RockData from '../../../data/all-rocks.json'
 
-const chunked = chunk(RockIDs, 200)
-const apiKey = process.env.OPENSEA_API_KEY
+const chunked = chunk(RockData, 200)
+// const apiKey = process.env.OPENSEA_API_KEY
 
 const fetchRockPage = async (ids) => {
-  let url = 'https://api.opensea.io/api/v1/assets/collection=0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85&'
-  url += ids.map((id) => `token_ids=${id}`).join('&')
+  let url = 'https://opensea.io/assets/ethereum/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/'
+  let rockIdList = [];
+  let rockNameList = [];
+  let rockIds = Object.keys(RockData[0]);
+  let rockNames = Object.values(RockData[0]);
+  
+  for(let i=0;i<rockIds.length;i++) {
+    url += `${rockIds[i]}`;
+    rockIdList.push(url);
+    rockNameList.push(rockNames[i].name)
+    url = 'https://opensea.io/assets/ethereum/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/';
+  }
 
-  const res = await fetch(url, {
-    headers: {
-      'X-API-KEY': apiKey,
-    },
-  })
-  const json = await res.json()
-
-  return Promise.all(
-    json.assets.map(async (asset) => {
-      return {
-        ...asset
-      }
-    }),
-  )
+  return rockIdList;
 }
 
 export const fetchRocks = async () => {
   const data = await pMap(chunked, fetchRockPage, { concurrency: 2 })
   const mapped = flatten(data)
-    .filter(
-      (a) =>
-        a?.sell_orders?.[0]?.payment_token_contract.symbol === 'ETH',
-    )
-    .map((a) => {
-      return {
-        id: a.token_id,
-        price: Number(
-          etherUtils.formatUnits(
-            BigNumber.from(a.sell_orders[0]?.current_price.split('.')[0]),
-          ),
-        ),
-        svg: a.image_url,
-      }
-    })
-
-  return {
-    rocks: orderBy(mapped, ['price', 'id'], ['asc', 'asc']),
-    lastUpdate: new Date().toISOString(),
-  }
+  // console.log(mapped);
+  return mapped;
 }
 
 const handler = async (_req, res) => {
