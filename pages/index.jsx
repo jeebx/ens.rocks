@@ -3,6 +3,7 @@ import { format as ts } from 'timeago.js'
 
 export async function getStaticProps() {
   const data = await fetchRocks()
+  console.log(data);
   return { props: { data } };
 }
 
@@ -14,6 +15,7 @@ const Rock = ({ rock }) => {
         <img style={{ width: "200px", height: "200px" }} src={`/images/${rock.name}.jpeg`} width="350" height="350" />
         <div className="text-center">
           <p className="text-lg">{rock.name}</p>
+          {/* <p className="text-lg">{token.owner}</p> */}
         </div>
       </div>
     </a>
@@ -21,7 +23,7 @@ const Rock = ({ rock }) => {
 }
 
 const IndexPage = ({ data, lastUpdate }) => {
-  console.log(data);
+
   return (
     <div className="py-3 md:pb-0 font-mono flex flex-col justify-center items-center gap-4 pt-10 md:w-screen">
       <h1 className="text-lg md:text-3xl">ENS Rock DAO</h1>

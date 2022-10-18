@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/jeebx/ens.rocks#readme",
   "dependencies": {
+    "@zoralabs/nft-hooks": "^1.1.10",
+    "@zoralabs/zdk": "^2.2.0",
     "ethers": "^5.7.0",
     "lodash": "^4.17.21",
     "next": "^12.3.0",
